@@ -16,7 +16,7 @@ export interface RTPResult {
   rtp: number;
 }
 
-interface Card {
+export interface Card {
   suit: Suit;
   rank: Rank;
 }
@@ -46,6 +46,7 @@ function cardValue(card: Card): number {
   if (['K', 'Q', 'J'].includes(card.rank)) return 10;
   return Number(card.rank);
 }
+
 function handValue(cards: Card[]): { value: number, soft: boolean } {
   let total = 0, aces = 0;
   for (const c of cards) {
@@ -152,5 +153,11 @@ export class BlackjackGame {
       rtp: (totalPayout / totalBet) * 100,
     };
   }
+
+  // Add static helpers for UI usage (attached after class definition below!)
 }
+
+// Attach helpers as static methods
+(BlackjackGame as any).handValue = handValue;
+(BlackjackGame as any).dealerShouldHit = dealerShouldHit;
 

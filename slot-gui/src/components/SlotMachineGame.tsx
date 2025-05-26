@@ -1,4 +1,3 @@
-// src/components/SlotMachineGame.tsx
 import React, { useRef, useState } from "react";
 import { SlotMachine, defaultPayoutRules } from "../slotMachine";
 
@@ -6,28 +5,29 @@ const machineConfig = {
   symbols: ["🍒", "🍋", "🍉", "🔔", "💎", "7️⃣"],
   spinCost: 0.5,
   payoutRules: defaultPayoutRules,
-  balance: 5,
-  pot: 100,
 };
 
 function randomIdx(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-export default function SlotMachineGame() {
+export default function SlotMachineGame({
+  playerPot,
+  setPlayerPot,
+  casinoPot,
+  setCasinoPot,
+}: {
+  playerPot: number;
+  setPlayerPot: (n: number) => void;
+  casinoPot: number;
+  setCasinoPot: (n: number) => void;
+}) {
   const [reels, setReels] = useState(["🍒", "🍋", "🍉"]);
   const [spinning, setSpinning] = useState(false);
   const [message, setMessage] = useState("");
-  const [balance, setBalance] = useState(machineConfig.balance);
-  const [pot, setPot] = useState(machineConfig.pot);
   const [autoCount, setAutoCount] = useState(0);
 
   const slotRef = useRef(new SlotMachine({ ...machineConfig }));
-
-  function updateFromSlot() {
-    setBalance(slotRef.current.balance);
-    setPot(slotRef.current.pot);
-  }
 
   function spinWithAnimation(finalSpin: () => void) {
     setSpinning(true);
@@ -51,14 +51,28 @@ export default function SlotMachineGame() {
   function playRound() {
     if (spinning) return;
     setMessage("");
+    if (playerPot < machineConfig.spinCost) {
+      setMessage("Not enough balance to spin!");
+      return;
+    }
     spinWithAnimation(() => {
       try {
+        // Take spin cost from player, add to casino
+        setPlayerPot(playerPot - machineConfig.spinCost);
+        setCasinoPot(casinoPot + machineConfig.spinCost);
+
         const { result, win } = slotRef.current.spin();
+
         setReels(result);
-        updateFromSlot();
-        setMessage(
-          win > 0 ? `🎉 You won €${win.toFixed(2)}!` : "No win. Try again!"
-        );
+
+        if (win > 0) {
+          // Give winnings to player from casino
+          setPlayerPot(p => p + win);
+          setCasinoPot(c => c - win);
+          setMessage(`🎉 You won €${win.toFixed(2)}!`);
+        } else {
+          setMessage("No win. Try again!");
+        }
       } catch (e) {
         setMessage(e instanceof Error ? e.message : "Error!");
       }
@@ -74,14 +88,26 @@ export default function SlotMachineGame() {
       await new Promise<void>((resolve) => {
         spinWithAnimation(() => {
           try {
+            if (playerPot < machineConfig.spinCost) {
+              setMessage("Not enough balance to spin!");
+              setSpinning(false);
+              resolve();
+              return;
+            }
+            setPlayerPot(p => p - machineConfig.spinCost);
+            setCasinoPot(c => c + machineConfig.spinCost);
+
             const { result, win } = slotRef.current.spin();
             setReels(result);
-            updateFromSlot();
-            setMessage(
-              win > 0
-                ? `Spin #${i + 1}: 🎉 You won €${win.toFixed(2)}!`
-                : `Spin #${i + 1}: No win.`
-            );
+            if (win > 0) {
+              setPlayerPot(p => p + win);
+              setCasinoPot(c => c - win);
+              setMessage(
+                `Spin #${i + 1}: 🎉 You won €${win.toFixed(2)}!`
+              );
+            } else {
+              setMessage(`Spin #${i + 1}: No win.`);
+            }
           } catch (e) {
             setMessage(e instanceof Error ? e.message : "Error!");
           }
@@ -98,7 +124,6 @@ export default function SlotMachineGame() {
   function resetGame() {
     slotRef.current = new SlotMachine({ ...machineConfig });
     setReels(["🍒", "🍋", "🍉"]);
-    updateFromSlot();
     setMessage("Game reset!");
   }
 
@@ -108,9 +133,9 @@ export default function SlotMachineGame() {
         RTP: <span className="font-semibold">{slotRef.current.getRTP().toFixed(2)}%</span>
       </div>
       <div className="mb-2 text-lg font-semibold">
-        Balance: <span className="text-green-600 dark:text-green-400">€{balance.toFixed(2)}</span>
+        Balance: <span className="text-green-600 dark:text-green-400">€{playerPot.toFixed(2)}</span>
         {" | "}
-        Pot: <span className="text-blue-600 dark:text-blue-400">€{pot.toFixed(2)}</span>
+        Casino: <span className="text-blue-600 dark:text-blue-400">€{casinoPot.toFixed(2)}</span>
       </div>
       <div className="flex justify-center items-center text-6xl my-8 select-none">
         {reels.map((emoji, idx) => (
