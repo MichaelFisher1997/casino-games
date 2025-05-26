@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Games from "./pages/Games";
 import SlotMachinePage from "./pages/SlotMachinePage";
 import TestPage from "./pages/TestPage";
+import BlackjackPage from "./pages/BlackjackPage";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
             <Route path="/games" element={<Games />} />
             <Route path="/games/slots" element={<SlotMachinePage />} />
 						<Route path="/test" element={<TestPage />} />
+						<Route path="/games/blackjack" element={<BlackjackPage />} />
           </Routes>
         </div>
       </div>

@@ -13,6 +13,13 @@ export default function Games() {
           path="/games/slots"
           description="Try your luck with spinning emoji reels!"
         />
+				<GameCard
+				  title="Blackjack"
+				  emoji="🂡"
+				  path="/games/blackjack"
+				  description="Classic 21 with SVG cards!"
+				/>
+
         {/* More games here */}
       </div>
     </div>
