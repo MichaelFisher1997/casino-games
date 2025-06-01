@@ -2,7 +2,7 @@ name: Upload app.zip to S3
 
 on:
   push:
-    branches: [main]   # or your chosen branch
+    branches: [master]   # or your chosen branch
 
 jobs:
   upload:
