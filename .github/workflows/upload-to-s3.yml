@@ -7,9 +7,6 @@ on:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: slot-gui
 
     steps:
       - name: Checkout code
