@@ -15,6 +15,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: tree test 
+        run:  ls -la 
+
       - name: Zip app for deployment
         run: zip -r app.zip slot-gui/
 
