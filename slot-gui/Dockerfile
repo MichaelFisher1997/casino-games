@@ -1,22 +1,20 @@
-FROM node:20 AS builder
+# Use the latest Node LTS image for maximum compatibility
+FROM node:20
+
 WORKDIR /app
 
-# Install dependencies with npm
-COPY package.json package-lock.json ./
-RUN npm ci
-
+# Copy everything in (since it's all needed for the build and runtime)
 COPY . .
 
+# Install dependencies
+RUN npm install
+
+# Build your app (adjust if your build command is different)
 RUN npm run build
 
-FROM oven/bun:1.1.13
-WORKDIR /app
-
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server.ts ./server.ts
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
-
+# Expose the correct port (adjust if different)
 EXPOSE 8080
-CMD ["bun", "run", "server.ts"]
+
+# Start your server
+CMD ["node", "server.js"]
 
