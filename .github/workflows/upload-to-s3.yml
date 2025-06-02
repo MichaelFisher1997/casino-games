@@ -11,27 +11,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v1
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          bun-version: "latest"
+          node-version: "20"
 
       - name: Install dependencies
         run: |
           cd slot-gui
-          bun install
+          npm install
 
       - name: Build
         run: |
           cd slot-gui
-          bun install
-          bun run build
+          npm run build
 
       - name: Zip build artifacts
         run: |
           cd slot-gui
           zip -r ../app.zip .
-
 
       - name: Upload to S3
         env:
