@@ -30,7 +30,8 @@ jobs:
       - name: Zip build artifacts
         run: |
           cd slot-gui
-          zip -r ../app.zip Dockerfile dist/ server.ts package.json bun.lockb
+          zip -r ../app.zip .
+
 
       - name: Upload to S3
         env:
