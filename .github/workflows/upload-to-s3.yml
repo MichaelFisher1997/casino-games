@@ -34,13 +34,17 @@ jobs:
         run: |
           aws s3 cp app.zip s3://slot-gui-deploy-micqdf-20240601/app-${ENV_NAME}.zip
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Terraform Apply
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
-          ENV_NAME: ${{ env.ENV_NAME }}
+          ENV_NAME: slot-gui-${{ github.ref_name }}
         run: |
           cd terraform
           terraform apply -auto-approve -var="env_name=$ENV_NAME"
+
 
