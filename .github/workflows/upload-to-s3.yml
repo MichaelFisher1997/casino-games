@@ -5,23 +5,23 @@ on:
     branches: [master]   # or your chosen branch
 
 jobs:
-  upload:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Show files and working directory
-        run: |
-          pwd
-          ls -la
+      - name: Install dependencies
+        run: npm install
+        working-directory: slot-gui
 
       - name: Build static site
         run: npm run build
-      
+        working-directory: slot-gui
+
       - name: Zip app for deployment
-        run: zip -r app.zip . -x ".git/*" "node_modules/*"
+        run: cd slot-gui && zip -r ../app.zip . -x ".git/*" "node_modules/*"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -31,5 +31,5 @@ jobs:
           aws-region: us-east-1
 
       - name: Upload app.zip to S3
-        run: aws s3 cp ./app.zip s3://slot-gui-deploy-micqdf-20240601/app.zip
+        run: aws s3 cp app.zip s3://slot-gui-deploy-micqdf-20240601/app.zip
 
