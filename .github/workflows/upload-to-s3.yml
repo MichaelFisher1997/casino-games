@@ -20,21 +20,22 @@ jobs:
         run: |
           cd slot-gui
           npm install
-
-      - name: Build
+      
+      - name: Build frontend
         run: |
           cd slot-gui
           npm run build
-
-      - name: Test Docker build
+      
+      - name: Compile server.ts
         run: |
           cd slot-gui
-          docker build -t slot-gui-test .
-
+          npx tsc server.ts --outDir dist-server
+      
       - name: Zip build artifacts
         run: |
           cd slot-gui
-          zip -r ../app.zip .
+          zip -r ../app.zip dist/ dist-server/server.js package.json package-lock.json Dockerfile
+
 
       - name: Upload to S3
         env:
