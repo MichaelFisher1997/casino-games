@@ -18,7 +18,7 @@ jobs:
 
       - name: Docker build (test container)
         run: |
-          cd slot-gu
+          cd slot-gui
           docker build -t slot-gui-bun .
 
       - name: Zip all build artifacts for Beanstalk
