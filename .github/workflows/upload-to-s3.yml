@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd slot-gui
-          npm install
+          npm ci
 
       - name: Build
         run: |
