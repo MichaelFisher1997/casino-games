@@ -17,10 +17,11 @@ jobs:
           pwd
           ls -la
 
-
-      - name: Zip app for deployment (just contents, not slot-gui folder)
-        run: cd slot-gui && zip -r ../app.zip .
-
+      - name: Build static site
+        run: npm run build
+      
+      - name: Zip app for deployment
+        run: zip -r app.zip . -x ".git/*" "node_modules/*"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
