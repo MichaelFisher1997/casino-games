@@ -18,7 +18,7 @@ jobs:
 
       - name: Docker build (test container)
         run: |
-          cd slot-gui
+          cd slot-gu
           docker build -t slot-gui-bun .
 
       - name: Zip all build artifacts for Beanstalk
@@ -37,9 +37,12 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: CD into Terraform 
+        run: |
+          cd ../terraform
+
       - name: Terraform Init
         run: |
-          cd terraform
           terraform init
 
       - name: Terraform Apply
@@ -49,7 +52,6 @@ jobs:
           AWS_DEFAULT_REGION: us-east-1
           ENV_NAME: slot-gui-${{ github.ref_name }}
         run: |
-          cd terraform
           terraform apply -auto-approve -var="env_name=$ENV_NAME"
 
 
