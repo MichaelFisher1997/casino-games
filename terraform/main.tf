@@ -55,6 +55,13 @@ resource "aws_elastic_beanstalk_environment" "slot_gui_env" {
   }
 
   setting {
+    namespace = "aws:elasticbeanstalk:command"
+    name      = "DeploymentPolicy"
+    value     = "AllAtOnce"
+  }
+
+
+  setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "InstanceType"
     value     = "t3.micro"
