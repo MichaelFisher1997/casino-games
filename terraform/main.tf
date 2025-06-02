@@ -2,6 +2,12 @@ provider "aws" {
   region = "us-east-1"
 }
 
+variable "env_name" {
+  description = "The Elastic Beanstalk environment name (should be unique per branch)"
+  type        = string
+  default     = "slot-gui-env" # override in CI!
+}
+
 # --- IAM Role and Profile for Beanstalk EC2 instances ---
 resource "aws_iam_role" "beanstalk_ec2_role" {
   name = "aws-elasticbeanstalk-ec2-role"
@@ -34,19 +40,19 @@ resource "aws_elastic_beanstalk_application" "slot_gui_app" {
   description = "Elastic Beanstalk application for slot-gui Node app"
 }
 
-resource "aws_elastic_beanstalk_application_version" "init" {
-  name        = "init"
+resource "aws_elastic_beanstalk_application_version" "app_version" {
+  name        = var.env_name
   application = aws_elastic_beanstalk_application.slot_gui_app.name
   bucket      = "slot-gui-deploy-micqdf-20240601"
-  key         = "app.zip"
+  key         = "app-${var.env_name}.zip"
 }
 
 # --- Elastic Beanstalk Environment ---
 resource "aws_elastic_beanstalk_environment" "slot_gui_env" {
-  name                = "slot-gui-env"
+  name                = var.env_name
   application         = aws_elastic_beanstalk_application.slot_gui_app.name
   solution_stack_name = "64bit Amazon Linux 2023 v4.5.2 running Docker"
-  version_label       = aws_elastic_beanstalk_application_version.init.name
+  version_label       = aws_elastic_beanstalk_application_version.app_version.name
 
   setting {
     namespace = "aws:elasticbeanstalk:environment"
@@ -59,7 +65,6 @@ resource "aws_elastic_beanstalk_environment" "slot_gui_env" {
     name      = "DeploymentPolicy"
     value     = "AllAtOnce"
   }
-
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"

@@ -2,7 +2,7 @@ name: Deploy to S3 for Beanstalk
 
 on:
   push:
-    branches: [master]
+    branches: [master, dev, staging, '*' ]  # Add as needed
 
 jobs:
   build-and-upload:
@@ -10,6 +10,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set ENV_NAME (sanitize branch name)
+        run: |
+          SAFE_BRANCH=${GITHUB_REF_NAME//[^a-zA-Z0-9\-]/-}
+          echo "ENV_NAME=slot-gui-$SAFE_BRANCH" >> $GITHUB_ENV
 
       - name: Docker build (test container)
         run: |
@@ -19,12 +24,23 @@ jobs:
       - name: Zip all build artifacts for Beanstalk
         run: |
           cd slot-gui
-          zip -r ../app.zip . 
+          zip -r ../app.zip .
+
       - name: Upload to S3
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
         run: |
-          aws s3 cp app.zip s3://slot-gui-deploy-micqdf-20240601/app.zip
+          aws s3 cp app.zip s3://slot-gui-deploy-micqdf-20240601/app-${ENV_NAME}.zip
+
+      - name: Terraform Apply
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+          ENV_NAME: ${{ env.ENV_NAME }}
+        run: |
+          cd terraform
+          terraform apply -auto-approve -var="env_name=$ENV_NAME"
 
