@@ -44,8 +44,6 @@ jobs:
           AWS_DEFAULT_REGION: us-east-1
           ENV_NAME: slot-gui-${{ github.ref_name }}
         run: |
-          pwd
-          ls -la
           cd terraform
           terraform init
           terraform apply -auto-approve -var="env_name=$ENV_NAME"
