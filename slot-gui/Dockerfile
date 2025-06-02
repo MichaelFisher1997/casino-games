@@ -1,4 +1,4 @@
-# Use Bun's official image
+# Use the official Bun image
 FROM oven/bun:1.1
 
 WORKDIR /app
@@ -6,18 +6,15 @@ WORKDIR /app
 # Copy everything
 COPY . .
 
-# Install deps (this will use bun.lock if present)
+# Install deps with bun
 RUN bun install
 
-# Build the static site
+# Build your static files (if needed)
 RUN bun run build
 
-# Install express if you want to serve with Express (skip if using your own Bun server)
-RUN bun add express
+# Expose port (adjust if needed)
+EXPOSE 3000
 
-# Expose port (use 8080 for Beanstalk compatibility)
-EXPOSE 8080
-
-# Launch your server (adjust the path/script as needed)
+# If you want to serve static files with bun's HTTP, use your own server.js/server.ts.
 CMD ["bun", "run", "start"]
 
