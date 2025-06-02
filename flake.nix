@@ -22,6 +22,7 @@
               pkgs.jq
               pkgs.hcp
               pkgs.zsh
+              pkgs.nodejs
             ];
             shellHook = ''
               # Make a venv in the project dir (if not already)
