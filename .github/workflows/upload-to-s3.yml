@@ -26,6 +26,11 @@ jobs:
           cd slot-gui
           npm run build
 
+      - name: Test Docker build
+        run: |
+          cd slot-gui
+          docker build -t slot-gui-test .
+
       - name: Zip build artifacts
         run: |
           cd slot-gui
