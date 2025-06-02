@@ -11,32 +11,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+      - name: Docker build (test container)
+        run: |
+          cd slot-gui
+          docker build -t slot-gui-bun .
 
-      - name: Install dependencies
+      - name: Zip all build artifacts for Beanstalk
         run: |
           cd slot-gui
-          npm install
-      
-      - name: Build frontend
-        run: |
-          cd slot-gui
-          npm run build
-      
-      - name: Compile server.ts
-        run: |
-          cd slot-gui
-          npx tsc server.ts --outDir dist-server
-      
-      - name: Zip build artifacts
-        run: |
-          cd slot-gui
-          zip -r ../app.zip dist/ dist-server/server.js package.json package-lock.json Dockerfile
-
-
+          zip -r ../app.zip . 
       - name: Upload to S3
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

@@ -1,28 +1,21 @@
-FROM node:20 as builder
+# Use the official Bun image
+FROM oven/bun:1.2.12
 
+# Set working directory inside the container
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm install
-
+# Copy all files from your project directory into the container
 COPY . .
 
-# Build frontend
-RUN npm run build
+# Install dependencies
+RUN bun install --frozen-lockfile
 
-# Build server.js from server.ts
-RUN npx tsc server.ts --outDir dist-server
+# Build your frontend (assuming "build" script is in package.json)
+RUN bun run build
 
-FROM node:20
-
-WORKDIR /app
-
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/dist-server/server.js ./server.js
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/package-lock.json ./package-lock.json
-
+# Expose the app port (adjust if needed)
 EXPOSE 8080
 
-CMD ["node", "server.js"]
+# Start the server (Bun runs TypeScript directly)
+CMD ["bun", "run", "server.ts"]
 
