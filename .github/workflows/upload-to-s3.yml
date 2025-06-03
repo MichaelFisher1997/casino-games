@@ -45,7 +45,7 @@ jobs:
           ENV_NAME: ${{ env.ENV_NAME }}
         run: |
           cd terraform
-          terraform init
+          terraform init -backend-config="key=envs/${ENV_NAME}/terraform.tfstate"
           terraform apply -auto-approve -var="env_name=$ENV_NAME"
 
 
