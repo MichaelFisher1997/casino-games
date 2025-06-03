@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket = "my-bucket"
+    bucket = "slot-gui-tf-backend-micqdf"
+    key    = "envs/slot-gui/terraform.tfstate"
     region = "us-east-1"
-    key    = "envs/slot-gui-env/terraform.tfstate"
   }
 }
 
