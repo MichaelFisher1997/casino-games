@@ -1,7 +1,11 @@
 name: Destroy AWS Resources
 
 on:
-  workflow_dispatch: # enables manual trigger
+  workflow_dispatch:
+    inputs:
+      env_name:
+        description: "Environment name (e.g. slot-gui-master)"
+        required: true
 
 jobs:
   destroy:
@@ -18,9 +22,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
+          ENV_NAME: ${{ github.event.inputs.env_name }}
         run: |
           cd terraform
-          terraform init
-          terraform destroy -auto-approve -var="env_name=${{ github.event.inputs.env_name }}"
-
-
+          terraform init -backend-config="key=envs/${ENV_NAME}/terraform.tfstate"
+          terraform destroy -auto-approve -var="env_name=$ENV_NAME"
