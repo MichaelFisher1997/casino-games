@@ -1,3 +1,13 @@
+terraform {
+  backend "s3" {
+    bucket         = "slot-gui-terraform-state-micqdf"
+    key            = "envs/${var.env_name}/terraform.tfstate"
+    region         = "us-east-1"
+    #dynamodb_table = "slot-gui-terraform-lock"
+    #encrypt        = true
+  }
+}
+
 provider "aws" {
   region = "us-east-1"
 }
