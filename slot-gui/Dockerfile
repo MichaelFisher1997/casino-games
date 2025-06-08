@@ -14,7 +14,7 @@ RUN bun install --frozen-lockfile
 RUN bun run build
 
 # Expose the app port (adjust if needed)
-EXPOSE 8080
+EXPOSE 9090
 
 # Start the server (Bun runs TypeScript directly)
 CMD ["bun", "run", "server.ts"]
